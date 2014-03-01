@@ -63,7 +63,7 @@ nmap <leader>w :w!<cr>
 
 " :W sudo saves the file 
 " (useful for handling the permission-denied error)
-command W w !sudo tee % > /dev/null
+" command W w !sudo tee % > /dev/null
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -134,13 +134,14 @@ set foldcolumn=1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Enable syntax highlighting
 syntax enable 
+set nu
 
+set background=dark
 try
     colorscheme desert
 catch
 endtry
 
-set background=dark
 
 " Set extra options when running in GUI mode
 if has("gui_running")
@@ -152,6 +153,11 @@ endif
 
 " Set utf8 as standard encoding and en_US as the standard language
 set encoding=utf8
+set termencoding=utf-8
+set fileencodings=utf-8,ucs-bom,chinese,latin-1,cp936
+source $VIMRUNTIME/delmenu.vim
+source $VIMRUNTIME/menu.vim
+language messages zh_CN.utf-8
 
 " Use Unix as the standard file type
 set ffs=unix,dos,mac
@@ -203,6 +209,9 @@ vnoremap <silent> # :call VisualSelection('b', '')<CR>
 " Treat long lines as break lines (useful when moving around in them)
 map j gj
 map k gk
+
+" map jk to <esc>
+inoremap jk <esc>
 
 " Map <Space> to / (search) and Ctrl-<Space> to ? (backwards search)
 map <space> /
