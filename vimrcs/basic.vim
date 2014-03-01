@@ -157,7 +157,10 @@ set termencoding=utf-8
 set fileencodings=utf-8,ucs-bom,chinese,latin-1,cp936
 source $VIMRUNTIME/delmenu.vim
 source $VIMRUNTIME/menu.vim
+
+if has('win32')
 language messages zh_CN.utf-8
+endif
 
 " Use Unix as the standard file type
 set ffs=unix,dos,mac
