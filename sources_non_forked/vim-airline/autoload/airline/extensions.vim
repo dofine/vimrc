@@ -148,7 +148,7 @@ function! airline#extensions#load()
   endif
 
   if (get(g:, 'airline#extensions#hunks#enabled', 1) && get(g:, 'airline_enable_hunks', 1))
-        \ && (exists('g:loaded_signify') || exists('g:loaded_gitgutter'))
+        \ && (exists('g:loaded_signify') || exists('g:loaded_gitgutter') || exists('g:loaded_changes'))
     call airline#extensions#hunks#init(s:ext)
   endif
 
@@ -168,7 +168,8 @@ function! airline#extensions#load()
   endif
 
   if (get(g:, 'airline#extensions#branch#enabled', 1) && get(g:, 'airline_enable_branch', 1))
-        \ && (exists('*fugitive#head') || exists('*lawrencium#statusline'))
+        \ && (exists('*fugitive#head') || exists('*lawrencium#statusline') ||
+        \     (get(g:, 'airline#extensions#branch#use_vcscommand', 0) && exists('*VCSCommandGetStatusLine')))
     call airline#extensions#branch#init(s:ext)
   endif
 
@@ -206,21 +207,28 @@ function! airline#extensions#load()
     call airline#extensions#promptline#init(s:ext)
   endif
 
-  " load all other extensions not part of the default distribution
-  for file in split(globpath(&rtp, "autoload/airline/extensions/*.vim"), "\n")
-    " we have to check both resolved and unresolved paths, since it's possible
-    " that they might not get resolved properly (see #187)
-    if stridx(tolower(resolve(fnamemodify(file, ':p'))), s:script_path) < 0
-          \ && stridx(tolower(fnamemodify(file, ':p')), s:script_path) < 0
-      let name = fnamemodify(file, ':t:r')
-      if !get(g:, 'airline#extensions#'.name.'#enabled', 1)
-        continue
+  if get(g:, 'airline#extensions#nrrwrgn#enabled', 1) && exists(':NR') == 2
+      call airline#extensions#nrrwrgn#init(s:ext)
+  endif
+
+  if !get(g:, 'airline#extensions#disable_rtp_load', 0)
+    " load all other extensions, which are not part of the default distribution.
+    " (autoload/airline/extensions/*.vim outside of our s:script_path).
+    for file in split(globpath(&rtp, "autoload/airline/extensions/*.vim"), "\n")
+      " we have to check both resolved and unresolved paths, since it's possible
+      " that they might not get resolved properly (see #187)
+      if stridx(tolower(resolve(fnamemodify(file, ':p'))), s:script_path) < 0
+            \ && stridx(tolower(fnamemodify(file, ':p')), s:script_path) < 0
+        let name = fnamemodify(file, ':t:r')
+        if !get(g:, 'airline#extensions#'.name.'#enabled', 1)
+          continue
+        endif
+        try
+          call airline#extensions#{name}#init(s:ext)
+        catch
+        endtry
       endif
-      try
-        call airline#extensions#{name}#init(s:ext)
-      catch
-      endtry
-    endif
-  endfor
+    endfor
+  endif
 endfunction
 
